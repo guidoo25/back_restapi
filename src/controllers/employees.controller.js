@@ -1,6 +1,6 @@
 import { pool } from "../db.js";
 
-export const getEmployees = async (req, res) => {
+export const getproductos = async (req, res) => {
   let page = (req.query.page !== undefined && req.query.page !== 0) ? req.query.page : 1;
   const limit = (req.query.limit !== undefined && req.query.limit !== 0) ? req.query.limit : 10;
   let startValue;
@@ -106,7 +106,7 @@ export const createProduct = async (req, res) => {
     );
 
     // Cerrar la conexión
-    await pool.end();
+
 
     // Devolver la respuesta al cliente
     if (result.affectedRows > 0) {
