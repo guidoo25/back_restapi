@@ -96,6 +96,7 @@ export const createProduct = async (req, res) => {
 
     // Verificar que los campos requeridos no estén vacíos
     if (!name || !image || !price || !category) {
+      console.log(req.body);
       return res.status(400).json({ message: 'All fields are required' });
     }
 
@@ -107,6 +108,7 @@ export const createProduct = async (req, res) => {
 
     // Cerrar la conexión
 
+    console.log(req.body);
 
     // Devolver la respuesta al cliente
     if (result.affectedRows > 0) {

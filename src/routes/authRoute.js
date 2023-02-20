@@ -1,47 +1,38 @@
-import express from 'express';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import { pool } from '../db.js';
-import { JWT_SECRET } from '../config.js';
+import { Router } from "express";
+import {pool} from "../db.js"
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
-const router = express.Router();
+const router = Router();
+
 router.post('/auth', async (req, res) => {
-  try {
-    const { email, password } = req.body;
+  const { email, password } = req.body;
 
-    const query = 'SELECT id, username, email, password FROM users WHERE email = ?';
+  // Query the database to find the user with the given email
+  const [rows] = await pool.execute('SELECT * FROM users WHERE email = ?', [email]);
+  const user = rows[0];
 
-    const values = [email];
+  // If no user was found, return an error
+  if (!user) {
+    return res.status(401).json({ message: 'Incorrect email or password' });
+  }
 
-    const results = await pool.query(query, values);
+  // Compare the provided password with the stored hashed password
+  const isPasswordValid = await bcrypt.compare(password, user.password);
 
-    if (results.length === 0) {
-      return res.status(401).json({ message: 'Credenciales inválidas' });
-    }
-    console.log(results[0].password)
-
-    const match = await bcrypt.compare(password, results[0].password);
-
-    if (!match) {
-      return res.status(401).json({ message: 'Credenciales inválidas' });
-    }
-
-    const token = jwt.sign({ id: results[0].id }, JWT_SECRET, { expiresIn: '4h' });
-
-    res.json({
-      id: results[0].id,
-      email: results[0].email, //caca bi fybca 
-      token: token
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error en el servidor' });
+  if (isPasswordValid) {
+    // If the password is valid, create and return a JWT with the user ID, email, and token expiration time
+    const token = jwt.sign(
+      { userId: user.id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+    return res.status(200).json({ message: 'Login satisfactorio', userId: user.id, token });
+  } else {
+    // If the password is invalid, return an error
+    return res.status(401).json({ message: 'Incorrectos email o password' });
   }
 });
-
-
-
-
 
 
 
