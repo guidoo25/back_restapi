@@ -30,7 +30,7 @@ router.post('/auth', async (req, res) => {
 
     res.json({
       id: results[0].id,
-      email: results[0].email,
+      email: results[0].email, //caca bi fybca 
       token: token
     });
   } catch (error) {
