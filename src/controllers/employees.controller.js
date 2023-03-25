@@ -30,6 +30,33 @@ export const getproductos = async (req, res) => {
     return res.status(500).json({ message: "Something goes wrong" });
   }
 };
+export const getProductosByUserId = async (req, res) => {
+  try {
+    const { userid } = req.params;
+
+    const [rows] = await pool.query(`SELECT * FROM productos WHERE iduser = ?`, [userid]);
+
+    if (rows.length > 0) {
+      const producto = rows.map(row => ({
+        name: row.name,
+        image: row.image,
+        price: parseInt(row.price),
+        category: row.category,
+        id: row.id,
+      }));
+
+      res.json({ producto: producto });
+    } else {
+      res.status(404).json({ message: 'Productos no encontrados' });
+    }
+  } catch (error) {
+    return res.status(500).json({ message: 'Something goes wrong' });
+  }
+};
+
+
+
+
 
 
 
@@ -92,18 +119,18 @@ export const deleteEmployee = async (req, res) => {
 
 export const createProduct = async (req, res) => {
   try {
-    const { name, image, price, category } = req.body;
+    const { name, image, price, category,userid } = req.body;
 
     // Verificar que los campos requeridos no estén vacíos
-    if (!name || !image || !price || !category) {
+    if (!name ||   !price || !category, !userid) {
       console.log(req.body);
       return res.status(400).json({ message: 'All fields are required' });
     }
 
     // Insertar el producto en la base de datos
     const [result] = await pool.query(
-      'INSERT INTO productos (`name`, `image`, `price`, `category`) VALUES (?, ?, ?, ?)',
-      [name, image, price, category]
+      'INSERT INTO productos (name, image, price, category,iduser) VALUES (?,?,?,?,?)',
+      [name, image, price, category,userid]
     );
 
     // Cerrar la conexión
