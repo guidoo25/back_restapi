@@ -6,6 +6,7 @@ import indexRoutes from "./routes/index.routes.js";
 import authRoutes from "./routes/authRoute.js";
 import regisRoutes from "./routes/registerRoute.js";
 import estadisticas from "./routes/estadisticasRoutes.js";
+import factura from "./routes/facturaRoute.js";
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use("/api", employeesRoutes);
 app.use("/api",authRoutes)
 app.use("/api",regisRoutes)
 app.use("/api",estadisticas)
+app.use("/api",factura)
 
 app.use((req, res, next) => {
   const error = new Error("Not found");

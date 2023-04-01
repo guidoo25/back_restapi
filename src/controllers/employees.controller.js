@@ -30,6 +30,42 @@ export const getproductos = async (req, res) => {
     return res.status(500).json({ message: "Something goes wrong" });
   }
 };
+
+//actualizar producto 
+export const actualizarProducto = async (req, res) => {
+  const { id, iduser } = req.params; // obtener los parámetros id e iduser de la solicitud
+  const { name, image, price, category, stock, min_stock } = req.body; // obtener los datos del producto a actualizar del cuerpo de la solicitud
+
+  try {
+    // Verificar si el producto existe y pertenece al usuario antes de actualizarlo
+    const [rows] = await pool.query(`SELECT * FROM productos WHERE id = ? AND iduser = ?`, [id, iduser]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "Producto no encontrado" });
+    }
+
+    // Actualizar el registro del producto
+    await pool.query(`UPDATE productos SET name = ?, image = ?, price = ?, category = ?, stock = ?, min_stock = ? WHERE id = ? AND iduser = ?`, [name, image, price, category, stock, min_stock, id, iduser]);
+
+    // Obtener el producto actualizado
+    const [updatedRows] = await pool.query(`SELECT * FROM productos WHERE id = ? AND iduser = ?`, [id, iduser]);
+
+    // Enviar la respuesta con el producto actualizado
+    return res.status(200).json({ producto: updatedRows[0] });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Ocurrió un error al actualizar el producto" });
+  }
+};
+
+
+
+
+
+
+
+
+
 export const getProductosByUserId = async (req, res) => {
   try {
     const { userid } = req.params;
@@ -53,6 +89,62 @@ export const getProductosByUserId = async (req, res) => {
     return res.status(500).json({ message: 'Something goes wrong' });
   }
 };
+
+
+
+//NUMERO DE FACTURAS ULTIMO 
+export const getUltimoNumeroFacturaById = async (req, res) => {
+  try {
+    const { userid } = req.params;
+
+    const [rows] = await pool.query(`SELECT * FROM ultimonumerofactura WHERE user_id = ?`, [userid]);
+
+    if (rows.length > 0) {
+      const row = rows[0]; // Tomar solo el primer elemento
+      const factura = {
+        facturaUltimo: row.numero_factura,
+        codigo: row.codigo_establecimiento,
+        userid: row.user_id,
+      };
+      res.json(factura); // Enviar solo los datos de la factura
+    } else {
+      res.status(404).json({ message: 'Número de factura no encontrado' });
+    }
+  } catch (error) {
+    return res.status(500).json({ message: 'Something goes wrong' });
+  }
+};
+
+export const createUltimoNumeroFactura = async (req, res) => {
+  try {
+    const { numero_factura, codigo_establecimiento, user_id } = req.body;
+
+    const [result] = await pool.query(`INSERT INTO ultimonumerofactura (numero_factura, codigo_establecimiento, user_id) VALUES (?, ?, ?)`, [numero_factura, codigo_establecimiento, user_id]);
+
+    res.status(201).json({ id: result.insertId, numero_factura: numero_factura, codigo_establecimiento: codigo_establecimiento, user_id: user_id });
+  } catch (error) {
+    return res.status(500).json({ message: 'Something goes wrong' });
+  }
+};
+export const updateUltimoNumeroFactura = async (req, res) => {
+  try {
+    const { userid } = req.params;
+    const { numero_factura, codigo_establecimiento, user_id } = req.body;
+
+    const [result] = await pool.query(`UPDATE ultimonumerofactura SET numero_factura = ?, codigo_establecimiento = ? WHERE user_id = ?`, [numero_factura, codigo_establecimiento, user_id]);
+
+    if (result.affectedRows > 0) {
+      res.json({  numero_factura: numero_factura, codigo_establecimiento: codigo_establecimiento, user_id: user_id });
+    } else {
+      res.status(404).json({ message: 'Número de factura no encontrado' });
+    }
+  } catch (error) {
+    return res.status(500).json({ message: 'Something goes wrong' });
+  }
+};
+
+
+
 
 
 

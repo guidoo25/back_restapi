@@ -6,10 +6,11 @@ import {createEmisor} from "../controllers/emisorController.js";
 import {
   createProduct,
   deleteEmployee,
-  getEmployee,
+  actualizarProducto,
   getproductos,
   updateEmployee,
   getProductosByUserId
+
 
   
 } from "../controllers/employees.controller.js";
@@ -24,6 +25,8 @@ router.get("/producto", getproductos);
 router.post("/producto/new", createProduct);
 //ver PRODUCTO POR USERID 
 router.get("/producto/:userid", getProductosByUserId);
+//update producto
+router.put("/productos/:id/:iduser", actualizarProducto);
 
 //emisor 
 router.post("/emisor",createEmisor);
