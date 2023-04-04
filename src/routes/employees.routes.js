@@ -9,7 +9,8 @@ import {
   actualizarProducto,
   getproductos,
   updateEmployee,
-  getProductosByUserId
+  getProductosByUserId,
+  updateStock
 
 
   
@@ -30,6 +31,8 @@ router.put("/productos/:id/:iduser", actualizarProducto);
 
 //emisor 
 router.post("/emisor",createEmisor);
+//update  stock 
+router.put("/stock/:id/:iduser", updateStock);
 
 
 //ver las ordenes

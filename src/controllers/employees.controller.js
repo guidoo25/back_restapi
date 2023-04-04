@@ -22,6 +22,8 @@ export const getproductos = async (req, res) => {
         price: parseInt(row.price),
         category: row.category,
         id: row.id,
+        stock: row.stock,
+        min_stock: row.min_stock,
       };
     });
     
@@ -76,9 +78,11 @@ export const getProductosByUserId = async (req, res) => {
       const producto = rows.map(row => ({
         name: row.name,
         image: row.image,
-        price: parseInt(row.price),
+        price: parseFloat(row.price),
         category: row.category,
         id: row.id,
+         stock: row.stock,
+        min_stock: row.min_stock,
       }));
 
       res.json({ producto: producto });
@@ -188,6 +192,32 @@ export const deleteEmployee = async (req, res) => {
 
 
 };
+
+//actualizar Stock 
+
+export const updateStock = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { stock } = req.body;
+    const { iduser } = req.body;
+
+  const [rows] = await pool.query("UPDATE productos SET stock = ? WHERE id = ? AND iduser = ?", [stock, id, iduser]);
+  if (rows.length <= 0) {
+    return res.status(404).json({ message: "producto no encontrado" });
+  }
+  const newStock = rows[0].stock + stockChange;
+  if (newStock < 0) {
+    return res.status(400).json({ message: "Stock insuficiente" });
+  }
+  await pool.query("UPDATE productos SET stock = ? WHERE id = ?", [newStock, id]);
+  res.json ({ message: "Stock actualizado" , newStock : newStock});
+} catch (error) {
+  return res.status(500).json({ message: "Something goes wrong" });
+}
+};
+
+
+
 
 
 
