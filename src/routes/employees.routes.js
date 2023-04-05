@@ -10,7 +10,8 @@ import {
   getproductos,
   updateEmployee,
   getProductosByUserId,
-  updateStock
+  updateStocks,
+  createVenta
 
 
   
@@ -29,10 +30,13 @@ router.get("/producto/:userid", getProductosByUserId);
 //update producto
 router.put("/productos/:id/:iduser", actualizarProducto);
 
+//sale create
+router.post("/venta",createVenta); 
+
 //emisor 
 router.post("/emisor",createEmisor);
 //update  stock 
-router.put("/stock/:id/:iduser", updateStock);
+router.put("/stock/:id", updateStocks);
 
 
 //ver las ordenes

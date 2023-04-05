@@ -216,6 +216,46 @@ export const updateStock = async (req, res) => {
 }
 };
 
+export const updateStocks = async (req,res) => {
+  try {
+    const { id } = req.params;
+    const { stockChange, operation } = req.body;
+
+
+    const [rows] = await pool.query('SELECT stock FROM productos WHERE id = ? ', [id ]);
+
+    if (rows.length <= 0) {
+      return res.status(404).json({ message: 'producto no encontrado' });
+    }
+
+    const stock = rows[0].stock;
+    let newStock = stock;
+    
+    if (operation === 'ventas') {
+      newStock = stock - stockChange;
+    } else if (operation === 'compras') {
+      newStock = stock + stockChange;
+    } else {
+      return res.status(400).json({ message: 'Operación no válida' });
+    }
+
+    if (newStock < 0) {
+      return res.status(400).json({ message: 'Stock insuficiente' });
+    }
+
+    await pool.query('UPDATE productos SET stock = ? WHERE id = ? ', [newStock, id ]);
+    res.json({ message: 'Stock actualizado', newStock: newStock });
+  } catch (error) {
+    return res.status(500).json({ message: 'Algo salió mal' });
+  }
+};
+
+
+
+
+
+
+
 
 
 
@@ -271,6 +311,33 @@ export const createProduct = async (req, res) => {
 };
 
 
+//create venta 
+export const createVenta = async (req, res) => {
+  try {
+    const { id_producto ,iduser,cantidad,precio_unitario,fecha_venta } = req.body;
+
+    // Verificar que los campos requeridos no estén vacíos
+    if (!id_producto ||   !iduser || !cantidad, !precio_unitario, !fecha_venta) {
+      console.log(req.body);
+      return res.status(400).json({ message: 'All fields are required' });
+
+    }
+
+    // Insertar el producto en la base de datos
+    const [result] = await pool.query('INSERT INTO VENTAS (id_producto,id_usuario,cantidad,precio_unitario,fecha_venta) VALUES (?,?,?,?,?)', [id_producto ,iduser,cantidad,precio_unitario,fecha_venta]);
+
+    
+    console.log(req.body);
+
+    if (result.affectedRows > 0) {
+      return res.status(201).json({ message: 'Producto creado exitosamente' });
+    } else {
+      return res.status(500).json({ message: 'Creación fallida' });
+    }
+  } catch (error) {
+    return res.status(500).json({ message: 'Something goes wrong' });
+  }
+};
 
 
 
