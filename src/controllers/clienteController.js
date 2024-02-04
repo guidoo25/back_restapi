@@ -34,7 +34,7 @@ export const createClient = async (req, res) => {
       endValue = page * limit;
     } else {
       startValue = 0;
-      endValue = 10;
+      endValue = 25;
     } 
   
     try {

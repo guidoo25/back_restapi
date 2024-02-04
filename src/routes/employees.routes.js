@@ -11,9 +11,8 @@ import {
   updateEmployee,
   getProductosByUserId,
   updateStocks,
-  createVenta
-
-
+  createVenta,
+  checkStock,
   
 } from "../controllers/employees.controller.js";
 import {createOrder,getOrders,createEmpleado,} from "../controllers/ordenController.js";
@@ -50,7 +49,8 @@ router.post("/cliente",createClient );
 //ver clientes 
 router.get("/cliente/:userid",getClients);
 
-
+//checkStock
+router.get('/checkStock/:id/:quantity', checkStock)
 
 //crear empleado 
 router.post("/empleado",createEmpleado );

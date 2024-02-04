@@ -250,6 +250,26 @@ export const updateStocks = async (req,res) => {
   }
 };
 
+export const checkStock = async (req, res) => {
+  const productId = req.params.id;
+  const quantity = Number(req.params.quantity);
+
+  try {
+    const [rows] = await pool.query('SELECT stock FROM productos WHERE id = ?', [productId]);
+    if (rows.length > 0) {
+      const stock = rows[0].stock;
+      if (stock >= quantity) {
+        res.json({ message: "Stock is sufficient." });
+      } else {
+        res.json({ message: "Stock is insufficient." });
+      }
+    } else {
+      res.status(404).json({ message: "Product not found." });
+    }
+  } catch (error) {
+    return res.status(500).json({ message: "Something goes wrong" });
+  }
+};
 
 
 
